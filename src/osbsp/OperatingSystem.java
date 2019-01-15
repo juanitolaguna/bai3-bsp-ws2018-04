@@ -307,61 +307,50 @@ public class OperatingSystem {
      *         Zugriffsfehler
      */
     public synchronized int read(int pid, int virtAdr) {
-        // ToDo
-        int virtualPageNum; // Virtuelle Seitennummer
-        int offset; // Offset innerhalb der Seite
-        int realAddressOfItem; // Reale Adresse des Datenworts
-        Process proc; // Aktuelles Prozessobjekt
-        PageTableEntry pte; // Eintrag f�r die zu schreibende Seite
-        int readItem; // gelesenes Datenwort
+        // TODO 2
 
-        // �bergebene Adresse pr�fen
+        // Validate address
         if ((virtAdr < 0) || (virtAdr > VIRT_ADR_SPACE - WORD_SIZE)) {
-            System.err.println("OS: read ERROR " + pid + ": Adresse "
-                    + virtAdr
-                    + " liegt außerhalb des virtuellen Adressraums 0 - "
-                    + VIRT_ADR_SPACE);
+            System.err.println("OS: read ERROR " + pid + ": Adresse " + virtAdr
+                    + " liegt außerhalb des virtuellen Adressraums 0 - " + VIRT_ADR_SPACE);
             return -1;
         }
-        // Seitenadresse berechnen
-        virtualPageNum = getVirtualPageNum(virtAdr);
-        offset = getOffset(virtAdr);
+
+        int virtualPageNum = getVirtualPageNum(virtAdr);
+        int offset = getOffset(virtAdr);
+        int realAddressOfItem;
+        Process process = getProcess(pid);
+        PageTableEntry pte = process.pageTable.getPte(virtualPageNum);
+        int item;
+
         testOut("OS: read " + pid + " " + virtAdr + " +++ Seitennr.: " + virtualPageNum + " Offset: " + offset);
 
-        // Seite in Seitentabelle referenzieren
-        proc = getProcess(pid);
-        pte = proc.pageTable.getPte(virtualPageNum);
+        // Check if pte is in page table
         if (pte == null) {
-            // Seite nicht vorhanden:
+            // Not in page table
             System.err.println("OS: read ERROR " + pid + " +++ Seitennr.: " + virtualPageNum
                     + " in Seitentabelle nicht vorhanden");
             return -1;
-        } else {
-            // Seite vorhanden: Seite valid (im RAM)?
-            if (!pte.valid) {
-                // Seite nicht valid (also auf Platte --> Seitenfehler):
-                pte = handlePageFault(pte, pid);
-            }
-        }
-        // ------ Zustand: Seite ist in Seitentabelle und im RAM vorhanden
+        } else if (!pte.valid) pte = handlePageFault(pte, pid);
 
-        // Reale Adresse des Datenworts berechnen
+        // Calculate real address (MMU)
         realAddressOfItem = pte.realPageFrameAdr + offset;
-        // Datenwort aus RAM lesen
-        readItem=readFromRAM(realAddressOfItem);
-        if(readItem==-1) {
+
+        // Read from real address
+        item = readFromRAM(realAddressOfItem);
+
+        if (item == -1) {
             System.err.println("OS: read ERROR " + pid + " +++ item: " + " konnte nicht an virt. Adresse " + virtAdr
                     + " gelesen werden! RAM-Adresse: " + realAddressOfItem + " \n");
             return -1;
         }
-        testOut("OS: read " + pid + " +++ item: " + readItem
-                + " erfolgreich an virt. Adresse " + virtAdr
+        testOut("OS: read " + pid + " +++ item: " + item + " erfolgreich an virt. Adresse " + virtAdr
                 + " gelesen! RAM-Adresse: " + realAddressOfItem + " \n");
-        // Seitentabelle bzgl. Zugriffshistorie aktualisieren
+
+        // Set referenced bit
         pte.referenced = true;
-        // Statistische Zählung
         eventLog.incrementReadAccesses();
-        return readItem;
+        return item;
     }
 
     // --------------- Private Methoden des Betriebssystems
@@ -381,8 +370,8 @@ public class OperatingSystem {
      * @return Die entsprechende virtuelle Seitennummer
      */
     private int getVirtualPageNum(int virtAdr) {
-        // ToDo
-        return virtAdr/PAGE_SIZE; //virtAdr >> 8
+        // TODO 1.1
+        return virtAdr / PAGE_SIZE; //virtAdr >> 8
     }
 
     /**
@@ -391,8 +380,8 @@ public class OperatingSystem {
      * @return Den entsprechenden Offset zur Berechnung der realen Adresse
      */
     private int getOffset(int virtAdr) {
-        // ToDo
-        return virtAdr%PAGE_SIZE;//virtAdr & PAGE_SIZE-1;
+        // TODO 1.2
+        return virtAdr % PAGE_SIZE; //virtAdr & PAGE_SIZE - 1;
     }
 
     /**

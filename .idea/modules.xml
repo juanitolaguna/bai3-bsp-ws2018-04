@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/osbsp.iml" filepath="$PROJECT_DIR$/osbsp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bai3-bsp-ws2018-04.iml" filepath="$PROJECT_DIR$/bai3-bsp-ws2018-04.iml" />
     </modules>
   </component>
 </project>
