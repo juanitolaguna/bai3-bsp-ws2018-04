@@ -39,7 +39,7 @@ public class PageTable {
     /**
      * rnd für den Random-algo
      */
-    private Random pteRAMlistRnd;
+    private Random random;
 
     /**
      * Konstruktor
@@ -52,7 +52,7 @@ public class PageTable {
         // Die Liste auf RAM-Seiteneinträge erzeugen
         pteRAMlist = new LinkedList<PageTableEntry>();
         pteRAMlistIndex = 0;
-        pteRAMlistRnd = new Random();
+        random = new Random();
     }
 
     /**
@@ -165,9 +165,9 @@ public class PageTable {
      */
     private PageTableEntry randomAlgorithm(PageTableEntry newPte) {
         // TODO 3
-        PageTableEntry pte = pteRAMlist.set(pteRAMlistRnd.nextInt(pteRAMlist.size()), newPte);
-        os.testOut("Prozess " + pid
-                + ": RANDOM-Algorithmus hat pte ausgewählt: " + pte.virtPageNum);
+        int rnd = random.nextInt(pteRAMlist.size());
+        PageTableEntry pte = pteRAMlist.set(rnd, newPte);
+        os.testOut("Prozess " + pid + ": RANDOM-Algorithmus hat pte ausgewählt: " + pte.virtPageNum);
         return pte;
     }
 

@@ -371,7 +371,9 @@ public class OperatingSystem {
      */
     private int getVirtualPageNum(int virtAdr) {
         // TODO 1.1
-        return virtAdr / PAGE_SIZE; //virtAdr >> 8
+        // Foliensatz 4 Folie 33
+        // Virtuelle Seitennummer = floor(virtuelle Adresse / Seitengröße)
+        return virtAdr / PAGE_SIZE;
     }
 
     /**
@@ -381,7 +383,9 @@ public class OperatingSystem {
      */
     private int getOffset(int virtAdr) {
         // TODO 1.2
-        return virtAdr % PAGE_SIZE; //virtAdr & PAGE_SIZE - 1;
+        // Foliensatz 4 Folie 33
+        // Offset = Virtuelle Adresse mod Seitengröße
+        return virtAdr % PAGE_SIZE;
     }
 
     /**
